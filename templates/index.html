@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>進貨單價查詢系統</title>
+    <style>
+        body {font-family: Microsoft JhengHei;background:#f0f8ff;padding:50px;text-align:center;}
+        .box {width:650px;margin:auto;background:white;padding:40px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        input, button {padding:15px;font-size:18px;margin:10px;border-radius:8px;}
+        button {background:#0066cc;color:white;border:none;cursor:pointer;}
+        .msg {padding:15px;margin:20px;background:#d4edda;color:#155724;border-radius:10px;font-size:18px;}
+    </style>
+</head>
+<body>
+<div class="box">
+    <h1>進貨單價查詢系統</h1>
+    {% if msg %}<div class="msg">{{ msg }}</div>{% endif %}
+    <h2>1. 匯入 Excel 進貨資料</h2>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".xlsx,.xls" required>
+        <button type="submit">開始匯入</button>
+    </form>
+    <small>欄位順序：第1欄＝條碼　第2欄＝進貨編號　第3欄＝成本</small>
+    <hr style="margin:40px 0">
+    <h2>2. 條碼查詢歷史成本</h2>
+    <input type="text" id="code" placeholder="請輸入或掃描條碼" size="35" autofocus>
+    <button onclick="go()">查詢</button>
+    <div id="result" style="margin-top:30px;font-size:24px;min-height:50px;"></div>
+</div>
+<script>
+async function go() {
+    const code = document.getElementById('code').value.trim();
+    if (!code) return;
+    const res = await fetch('/search/' + code);
+    const txt = await res.text();
+    document.getElementById('result').innerHTML = txt || '<span style="color:#999">查無資料</span>';
+}
+document.getElementById('code').addEventListener('keyup', e => {
+    if (e.key === 'Enter') go();
+});
+</script>
+</body>
+</html>
